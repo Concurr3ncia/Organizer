@@ -29,7 +29,7 @@ def apps_tab():
                         ],
                         alignment=ft.alignment.center,
                         spacing=5,
-                        scroll=ft.ScrollMode.AUTO,
+                        scroll=ft.ScrollMode.ALWAYS,
                         height=container_height - 50,
                     ),
                 ],
@@ -74,7 +74,7 @@ def apps_tab():
     )
 
     progress_bar = ft.ProgressBar(width=400)
-    progress_bar.value = 0
+    progress_bar.value= 1
     current_task_text = ft.Text("")
 
     download_button = ft.ElevatedButton(
@@ -100,31 +100,59 @@ def apps_tab():
         expand=True,
     )
 
+def uninstall_app(app_name):
+    # Convertimos el nombre de la app a minúsculas para comparaciones consistentes
+    app_name_lower = app_name.lower()
+    
+    # Primero verificamos si el paquete .install está instalado
+    check_installed = subprocess.run(["choco", "list"], capture_output=True, text=True)
+    
+    # Si el paquete .install está instalado, primero lo desinstalamos
+    if f"{app_name_lower}.install" in check_installed.stdout.lower():
+        print(f"Desinstalando {app_name}.install...")
+        try:
+            subprocess.run(["choco", "uninstall", f"{app_name_lower}.install", "-y", "--force"], check=True)
+            print(f"Paquete {app_name}.install desinstalado correctamente.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error al desinstalar {app_name}.install: {e}")
+    
+    # Luego intentamos desinstalar el paquete principal (sin .install)
+    if f"{app_name_lower}" in check_installed.stdout.lower():
+        print(f"Desinstalando {app_name}...")
+        try:
+            subprocess.run(["choco", "uninstall", app_name_lower, "-y", "--force-dependencies"], check=True)
+            print(f"Paquete {app_name} desinstalado correctamente.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error al desinstalar {app_name}: {e}")
+    else:
+        print(f"{app_name} no está instalado.")
+
 def manage_apps(checkboxes, action, progress_bar, current_task_text):
     selected_apps = [checkbox.label for checkbox in checkboxes if checkbox.value]
     total_apps = len(selected_apps)
+    progress_step = 1 / total_apps if total_apps else 0
 
     progress_bar.value = 0
     progress_bar.update()
 
     for idx, app in enumerate(selected_apps):
-        current_task_text.value = f"{app} ({idx + 1}/{total_apps})"
-        current_task_text.update()
+        try:
+            current_task_text.value = f"{app} ({idx + 1}/{total_apps}) - {int((idx + 1) / total_apps * 100)}%"
+            current_task_text.update()
+            
+            if action == "install":
+                # Instalación de la app
+                subprocess.run(["choco", action, app, "-y", "--force"], check=True)
+            else:
+                # Desinstalación de la app
+                uninstall_app(app)
 
-        process = subprocess.Popen(["choco", action, app, "-y", "--force"] if action == "install" else ["choco", action, app, "-y"],
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   text=True)
-
-        for line in process.stdout:
-            print(line.strip())
-            # Aquí puedes parsear la salida para determinar el progreso y actualizar la barra
-            # Por simplicidad, estamos asumiendo que cada línea de salida representa un progreso constante
-            progress_bar.value += (1 / total_apps) * (1 / 100)  # Suponiendo 100 líneas de progreso por instalación
-            progress_bar.update()
-
-        process.stdout.close()
-        process.wait()
+            print(f"Successfully {action}ed {app}")
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to {action} {app}: {e}")
+        
+        progress_bar.value += progress_step
+        progress_bar.update()
 
     current_task_text.value = "Completed!"
     current_task_text.update()
