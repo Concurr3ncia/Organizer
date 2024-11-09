@@ -262,7 +262,7 @@ def main(page: ft.Page):
         height=50,
         border_radius=10,
         bgcolor="#1B1C30",
-        border=ft.border.only(bottom=ft.border.BorderSide(3.5, "#1B1C30")),
+        border=ft.border.only(bottom=ft.border.BorderSide(3.5, "#1B1C30")), 
         content=child_container,
         animate=ft.animation.Animation(duration=300, curve="easeInOut")
     )
