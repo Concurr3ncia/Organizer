@@ -2,7 +2,7 @@ import flet as ft
 import subprocess
 
 apps_categories = {
-    "System": {"WinRar", "7-Zip", "LibreOffice", "Adobe Reader", "MSI Afterburner", "LightShot", ".NET Framework", "CCleaner", "Driver Booster", "Malwarebytes", "Revo Uninstaller", "TeamViewer"},
+    "System": {"WinRar", "7-Zip", "LibreOffice", "Adobe Reader", "MSI Afterburner", "LightShot", ".NET Framework", "CCleaner", "Driver Booster", "Malwarebytes", "Revo Uninstaller", "TeamViewer","OPautoclicker"},
     "Internet": {"Discord", "Steam", "Epic Games", "OBS", "Spotify", "Zoom", "Skype", "Slack", "Twitch", "Facebook Messenger", "Microsoft Teams"},
     "Browsers": {"Google Chrome", "Brave", "Firefox", "Opera", "Microsoft Edge", "Tor", "Safari", "Vivaldi", "Midori", "Yandex"},
     "Coding": {"VSCode", "Python", "Notepad++", "Sublime Text", "WinSCP", "GitHub", "Atom", "XAMPP", "Git", "PyCharm", "Eclipse", "Docker", "Postman", "Notion"},
