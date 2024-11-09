@@ -1,5 +1,6 @@
 import flet as ft
 import subprocess
+import threading
 
 apps_categories = {
     "System": {"WinRar", "7-Zip", "LibreOffice", "Adobe Reader", "MSI Afterburner", "LightShot", ".NET Framework", "CCleaner", "Driver Booster", "Malwarebytes", "Revo Uninstaller", "TeamViewer"},
@@ -28,8 +29,8 @@ def apps_tab():
                         ],
                         alignment=ft.alignment.center,
                         spacing=5,
-                        scroll=ft.ScrollMode.ALWAYS,
-                        height=container_height - 10,
+                        scroll=ft.ScrollMode.AUTO,
+                        height=container_height - 50,
                     ),
                 ],
                 alignment=ft.alignment.center,
@@ -78,12 +79,12 @@ def apps_tab():
 
     download_button = ft.ElevatedButton(
         text="Download",
-        on_click=lambda e: manage_apps(checkboxes, "install", progress_bar, current_task_text)
+        on_click=lambda e: threading.Thread(target=manage_apps, args=(checkboxes, "install", progress_bar, current_task_text)).start()
     )
 
     uninstall_button = ft.ElevatedButton(
         text="Uninstall",
-        on_click=lambda e: manage_apps(checkboxes, "uninstall", progress_bar, current_task_text)
+        on_click=lambda e: threading.Thread(target=manage_apps, args=(checkboxes, "uninstall", progress_bar, current_task_text)).start()
     )
 
     buttons_container = ft.Row(
@@ -102,25 +103,28 @@ def apps_tab():
 def manage_apps(checkboxes, action, progress_bar, current_task_text):
     selected_apps = [checkbox.label for checkbox in checkboxes if checkbox.value]
     total_apps = len(selected_apps)
-    progress_step = 1 / total_apps if total_apps else 0
 
     progress_bar.value = 0
     progress_bar.update()
 
     for idx, app in enumerate(selected_apps):
-        try:
-            current_task_text.value = f"{app} ({idx + 1}/{total_apps}) - {int((idx + 1) / total_apps * 100)}%"
-            current_task_text.update()
-            if action == "install":
-                subprocess.run(["choco", action, app, "-y", "--force"], check=True)
-            else:
-                subprocess.run(["choco", action, app, "-y"], check=True)
-            print(f"Successfully {action}ed {app}")
-        except subprocess.CalledProcessError as e:
-            print(f"Failed to {action} {app}: {e}")
-        
-        progress_bar.value += progress_step
-        progress_bar.update()
+        current_task_text.value = f"{app} ({idx + 1}/{total_apps})"
+        current_task_text.update()
+
+        process = subprocess.Popen(["choco", action, app, "-y", "--force"] if action == "install" else ["choco", action, app, "-y"],
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   text=True)
+
+        for line in process.stdout:
+            print(line.strip())
+            # Aquí puedes parsear la salida para determinar el progreso y actualizar la barra
+            # Por simplicidad, estamos asumiendo que cada línea de salida representa un progreso constante
+            progress_bar.value += (1 / total_apps) * (1 / 100)  # Suponiendo 100 líneas de progreso por instalación
+            progress_bar.update()
+
+        process.stdout.close()
+        process.wait()
 
     current_task_text.value = "Completed!"
     current_task_text.update()
