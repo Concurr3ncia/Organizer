@@ -14,7 +14,7 @@ apps_categories = {
 def apps_tab():
     rows = []
     container_width = 200
-    container_height = 500
+    container_height = 490
     checkboxes = []
 
     row = []
@@ -100,14 +100,10 @@ def apps_tab():
         expand=True,
     )
 
-def uninstall_app(app_name):
-    # Convertimos el nombre de la app a minúsculas para comparaciones consistentes
+def uninstall_app(app_name, progress_bar, current_task_text):
     app_name_lower = app_name.lower()
-    
-    # Primero verificamos si el paquete .install está instalado
     check_installed = subprocess.run(["choco", "list"], capture_output=True, text=True)
     
-    # Si el paquete .install está instalado, primero lo desinstalamos
     if f"{app_name_lower}.install" in check_installed.stdout.lower():
         print(f"Desinstalando {app_name}.install...")
         try:
@@ -116,7 +112,6 @@ def uninstall_app(app_name):
         except subprocess.CalledProcessError as e:
             print(f"Error al desinstalar {app_name}.install: {e}")
     
-    # Luego intentamos desinstalar el paquete principal (sin .install)
     if f"{app_name_lower}" in check_installed.stdout.lower():
         print(f"Desinstalando {app_name}...")
         try:
@@ -130,31 +125,35 @@ def uninstall_app(app_name):
 def manage_apps(checkboxes, action, progress_bar, current_task_text):
     selected_apps = [checkbox.label for checkbox in checkboxes if checkbox.value]
     total_apps = len(selected_apps)
-    progress_step = 1 / total_apps if total_apps else 0
 
     progress_bar.value = 0
     progress_bar.update()
 
     for idx, app in enumerate(selected_apps):
         try:
-            current_task_text.value = f"{app} ({idx + 1}/{total_apps}) - {int((idx + 1) / total_apps * 100)}%"
+            current_task_text.value = f"{app} ({idx + 1}/{total_apps})"
             current_task_text.update()
-            
+
             if action == "install":
                 # Instalación de la app
-                subprocess.run(["choco", action, app, "-y", "--force"], check=True)
+                process = subprocess.Popen(["choco", action, app, "-y", "--force"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                for line in process.stdout:
+                    # Aquí puedes leer las líneas de salida del comando para hacer algo con ellas si es necesario
+                    print(line.decode("utf-8"))
+            
             else:
                 # Desinstalación de la app
-                uninstall_app(app)
+                uninstall_app(app, progress_bar, current_task_text)
+
+            # Actualizamos la barra de progreso después de cada acción
+            progress_bar.value += (1 / total_apps) * 100
+            progress_bar.update()
 
             print(f"Successfully {action}ed {app}")
         except subprocess.CalledProcessError as e:
             print(f"Failed to {action} {app}: {e}")
-        
-        progress_bar.value += progress_step
-        progress_bar.update()
 
     current_task_text.value = "Completed!"
     current_task_text.update()
-    progress_bar.value = 1
+    progress_bar.value = 100
     progress_bar.update()
