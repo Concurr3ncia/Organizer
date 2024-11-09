@@ -1,183 +1,105 @@
 import flet as ft
 import subprocess
 
-def get_cpu_info():
-    command = 'Get-CimInstance -ClassName Win32_Processor'
+def obtener_version_windows():
+    comando = 'Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -ExpandProperty Name'
     try:
-        cpu_raw = subprocess.check_output(["powershell", "-Command", command], stderr=subprocess.PIPE)
-        cpu_info = {}
-        for line in cpu_raw.decode('latin1').strip().splitlines():
-            if ":" in line:
-                key, value = line.split(":", 1)
-                cpu_info[key.strip()] = value.strip()
-        return cpu_info
+        cpu_info_raw = subprocess.check_output(["powershell", "-Command", comando]).decode().strip()
+        cpu_info = cpu_info_raw.split("|")
+        return cpu_info[0]
     except subprocess.CalledProcessError as e:
-        return f"Error getting CPU info: {e}"
+        return f"Error al obtener información de Windows: {e}"
 
-def get_mainboard_info():
-    command = 'Get-CimInstance -ClassName Win32_BaseBoard'
+def obtener_info_cpu():
+    comando = 'Get-CimInstance -ClassName Win32_Processor | Select-Object -ExpandProperty Name'
     try:
-        mainboard_raw = subprocess.check_output(["powershell", "-Command", command], stderr=subprocess.PIPE)
-        mainboard_info = {}
-        for line in mainboard_raw.decode('latin1').strip().splitlines():
-            if ":" in line:
-                key, value = line.split(":", 1)
-                mainboard_info[key.strip()] = value.strip()
-        return mainboard_info
+        processor_info_raw = subprocess.check_output(["powershell", "-Command", comando]).decode().strip()
+        return processor_info_raw
     except subprocess.CalledProcessError as e:
-        return f"Error getting mainboard info: {e}"
+        return f"Error al obtener información del CPU: {e}"
 
-def get_gpu_info():
-    command = 'Get-CimInstance -ClassName Win32_VideoController'
+def obtener_arquitectura_cpu():
+    comando = 'Get-CimInstance -ClassName Win32_Processor | Select-Object -ExpandProperty Architecture'
     try:
-        gpu_raw = subprocess.check_output(["powershell", "-Command", command], stderr=subprocess.PIPE)
-        gpu_info = {}
-        for line in gpu_raw.decode('latin1').strip().splitlines():
-            if ":" in line:
-                key, value = line.split(":", 1)
-                gpu_info[key.strip()] = value.strip()
-        # Convert VRAM from bytes to GB
-        if "AdapterRAM" in gpu_info:
-            gpu_info["AdapterRAM"] = str(int(gpu_info["AdapterRAM"]) // (1024 ** 3)) + " GB"
-        return gpu_info
+        arquitectura_raw = subprocess.check_output(["powershell", "-Command", comando]).decode().strip()
+        arquitectura_map = {
+            "0": "x86",
+            "1": "MIPS",
+            "2": "Alpha",
+            "3": "PowerPC",
+            "5": "ARM",
+            "6": "Itanium-based systems",
+            "9": "x64"
+        }
+        arquitectura = arquitectura_map.get(arquitectura_raw, "Desconocida")
+        return arquitectura
     except subprocess.CalledProcessError as e:
-        return f"Error getting GPU info: {e}"
+        return f"Error al obtener arquitectura del CPU: {e}"
 
-def get_ram_info():
-    command = 'Get-CimInstance -ClassName Win32_PhysicalMemory'
+def obtener_info_gpu():
+    comando = 'Get-CimInstance -ClassName Win32_VideoController | Select-Object -ExpandProperty Name'
     try:
-        ram_raw = subprocess.check_output(["powershell", "-Command", command], stderr=subprocess.PIPE)
-        ram_info = {}
-        for line in ram_raw.decode('latin1').strip().splitlines():
-            if ":" in line:
-                key, value = line.split(":", 1)
-                ram_info[key.strip()] = value.strip()
-        # Convert RAM capacity from bytes to GB
-        if "Capacity" in ram_info:
-            ram_info["Capacity"] = str(int(ram_info["Capacity"]) // (1024 ** 3)) + " GB"
-        return ram_info
+        gpu_info_raw = subprocess.check_output(["powershell", "-Command", comando]).decode().strip()
+        return gpu_info_raw
     except subprocess.CalledProcessError as e:
-        return f"Error getting RAM info: {e}"
+        return f"Error al obtener información de la GPU: {e}"
 
-def get_disk_info():
-    command = 'Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object DeviceID, Size, MediaType'
+def obtener_nombre_equipo():
+    comando = 'Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -ExpandProperty UserName'
     try:
-        disk_raw = subprocess.check_output(["powershell", "-Command", command], stderr=subprocess.PIPE)
-        disk_info = []
-        for line in disk_raw.decode('latin1').strip().splitlines():
-            if ":" in line:
-                parts = line.split(":")
-                if len(parts) > 1:
-                    key, value = parts[0].strip(), parts[1].strip()
-                    if key in ["DeviceID", "Size", "MediaType"]:
-                        # Convert disk size from bytes to GB
-                        if key == "Size":
-                            value = str(int(value) // (1024 ** 3)) + " GB"
-                        disk_info.append((key, value))
-        return disk_info
+        nombre_equipo = subprocess.check_output(["powershell", "-Command", comando]).decode().strip()
+        return nombre_equipo
     except subprocess.CalledProcessError as e:
-        return f"Error getting disk info: {e}"
+        return f"Error al obtener el nombre del equipo: {e}"
+
+def obtener_info_ram():
+    comando = 'Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -ExpandProperty TotalPhysicalMemory'
+    try:
+        ram_info_raw = subprocess.check_output(["powershell", "-Command", comando]).decode().strip()
+        ram_total_gb = int(ram_info_raw) / (1024 ** 3)  # Convertir bytes a GB 
+        return f'{ram_total_gb:.2f} GB'
+    except subprocess.CalledProcessError as e:
+        return f"Error al obtener información de la RAM: {e}"
+
+def mostrar_info_general():
+    nombre_equipo = obtener_nombre_equipo().split('\\')[-1]  # Obtener solo el nombre del usuario
+    info = {
+        "Nombre de CPU": obtener_info_cpu(),
+        "Arquitectura de CPU": obtener_arquitectura_cpu(),
+        "Nombre de la GPU": obtener_info_gpu(),
+        "Cantidad de memoria RAM": obtener_info_ram(),
+        "Versión del Sistema Operativo": obtener_version_windows(),
+        "Nombre del Usuario": nombre_equipo
+    }
+    return info
 
 def display_hardware_info(page):
-    cpu = get_cpu_info()
-    mainboard = get_mainboard_info()
-    gpu = get_gpu_info()
-    ram = get_ram_info()
-    disks = get_disk_info()
+    info = mostrar_info_general()
+    
+    containers = []
+    for key, value in info.items():
+        container = ft.Container(
+            content=ft.Column(
+                controls=[
+                    ft.Text(key, size=18, weight=ft.FontWeight.BOLD),
+                    ft.Text(value, size=16)
+                ],
+                alignment=ft.MainAxisAlignment.START,
+                spacing=5,
+            ),
+            padding=ft.padding.all(10),
+            bgcolor="#3C3D5C",
+            border_radius=10,
+            width=page.width // 3 - 20,
+        )
+        containers.append(container)
 
-    cpu_container = ft.Container(
-        content=ft.Column(
-            controls=[
-                ft.Text("CPU", size=24, weight=ft.FontWeight.BOLD),
-                ft.Text(f"Name: {cpu.get('Name', 'Unknown')}"),
-                ft.Text(f"Family: {cpu.get('Family', 'Unknown')}"),
-                ft.Text(f"MaxClockSpeed: {cpu.get('MaxClockSpeed', 'Unknown')} MHz"),
-                ft.Text(f"Architecture: {cpu.get('Architecture', 'Unknown')}")
-            ],
-            alignment=ft.MainAxisAlignment.START,
-            spacing=10,
-        ),
-        padding=ft.padding.all(10),
-        bgcolor="#3C3D5C",
-        border_radius=10,
-        height=page.height // 5  # Dynamic height based on the page height
-    )
-
-    mainboard_container = ft.Container(
-        content=ft.Column(
-            controls=[
-                ft.Text("Mainboard", size=24, weight=ft.FontWeight.BOLD),
-                ft.Text(f"Manufacturer: {mainboard.get('Manufacturer', 'Unknown')}"),
-                ft.Text(f"Product: {mainboard.get('Product', 'Unknown')}")
-            ],
-            alignment=ft.MainAxisAlignment.START,
-            spacing=10,
-        ),
-        padding=ft.padding.all(10),
-        bgcolor="#3C3D5C",
-        border_radius=10,
-        height=page.height // 5  # Dynamic height based on the page height
-    )
-
-    gpu_container = ft.Container(
-        content=ft.Column(
-            controls=[
-                ft.Text("GPU", size=24, weight=ft.FontWeight.BOLD),
-                ft.Text(f"Name: {gpu.get('Name', 'Unknown')}"),
-                ft.Text(f"VRAM: {gpu.get('AdapterRAM', 'Unknown')}")
-            ],
-            alignment=ft.MainAxisAlignment.START,
-            spacing=10,
-        ),
-        padding=ft.padding.all(10),
-        bgcolor="#3C3D5C",
-        border_radius=10,
-        height=page.height // 5  # Dynamic height based on the page height
-    )
-
-    ram_container = ft.Container(
-        content=ft.Column(
-            controls=[
-                ft.Text("RAM", size=24, weight=ft.FontWeight.BOLD),
-                ft.Text(f"Capacity: {ram.get('Capacity', 'Unknown')}"),
-                ft.Text(f"Speed: {ram.get('Speed', 'Unknown')}")
-            ],
-            alignment=ft.MainAxisAlignment.START,
-            spacing=10,
-        ),
-        padding=ft.padding.all(10),
-        bgcolor="#3C3D5C",
-        border_radius=10,
-        height=page.height // 5  # Dynamic height based on the page height
-    )
-
-    disks_container = ft.Container(
-        content=ft.Column(
-            controls=[
-                ft.Text("Disks", size=24, weight=ft.FontWeight.BOLD),
-                ft.Text(" | ".join([f"{disk[0]}: {disk[1]}" for disk in disks]))
-            ],
-            alignment=ft.MainAxisAlignment.START,
-            spacing=10,
-        ),
-        padding=ft.padding.all(10),
-        bgcolor="#3C3D5C",
-        border_radius=10,
-        height=page.height // 5  # Dynamic height based on the page height
-    )
-
-    # Organize in a ListView to allow scrolling
     list_view = ft.ListView(
-        controls=[
-            cpu_container,
-            mainboard_container,
-            gpu_container,
-            ram_container,
-            disks_container,
-        ],
-        height=page.height - 100,  # Take the remaining height after header and footer
-        width=page.width,  # Full page width
-        padding=ft.padding.all(20),  # Add padding between components
+        controls=containers,
+        height=page.height,
+        width=page.width,
+        padding=ft.padding.all(10),
+        spacing=10
     )
 
     return list_view
