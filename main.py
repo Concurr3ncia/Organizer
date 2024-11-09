@@ -1,11 +1,11 @@
 import flet as ft
 import time
 from apps_tab import *
-
+from hardware_tab import *
 
 def main(page: ft.Page):
     page.window.maximized = True
-    page.bgcolor = "#30303d"
+    page.bgcolor = "#25253d"
     page.title = "Organizer"
 
     header = ft.Container(
@@ -19,7 +19,7 @@ def main(page: ft.Page):
         alignment=ft.alignment.top_left
     )
 
-    def create_menu_item(icon_name, label, tab_content):
+    def create_menu_item(icon_name, label, tab_content, colorselect):
         is_hovered = False
         text = None
 
@@ -35,38 +35,27 @@ def main(page: ft.Page):
                                     ft.TextStyle(
                                         weight=ft.FontWeight.BOLD,
                                         foreground=ft.Paint(
-                                            color=ft.colors.GREY_100,
+                                            color="#b8bfd9",
                                             stroke_width=1,
                                             stroke_join=ft.StrokeJoin.ROUND
                                         ),
                                     ),
                                 ),
                             ],
-                        ),
-                        ft.Text(
-                            spans=[
-                                ft.TextSpan(
-                                    label,
-                                    ft.TextStyle(
-                                        weight=ft.FontWeight.BOLD,
-                                        color=ft.colors.WHITE,
-                                    ),
-                                ),
-                            ],
-                        ),
+                        )
                     ]
                 )
                 e.control.content.controls.append(text)
                 label_width = len(label) * 8
-                e.control.width = 50 + label_width + 20
-                menu.width = 360 + label_width + 20
-                child_container.width = 360 + label_width + 20
-                e.control.bgcolor = "#9a9bb5"
+                e.control.width = 50 + label_width
+                menu.width = page.width * 0.31 + label_width
+                child_container.width = page.width * 0.31 + label_width
+                e.control.bgcolor = "#888abf"
                 is_hovered = True
             elif e.data == "false" and is_hovered:
                 e.control.content.controls.pop()
-                menu.width = 360
-                child_container.width = 360
+                menu.width = page.width * 0.31
+                child_container.width = page.width * 0.31
                 e.control.width = 50
                 e.control.bgcolor = "#5D5F92"
                 is_hovered = False
@@ -85,7 +74,7 @@ def main(page: ft.Page):
 
         return ft.Container(
             content=ft.Row(
-                controls=[ft.Icon(name=icon_name, color=ft.colors.WHITE, size=30)],
+                controls=[ft.Icon(name=icon_name, color=colorselect, size=30)],
                 alignment=ft.MainAxisAlignment.CENTER,
             ),
             width=50,
@@ -101,19 +90,21 @@ def main(page: ft.Page):
     tabs_content = {
         "Windows": ft.Text("Windows Content", size=24, color=ft.colors.WHITE),
         "Apps": apps_tab(),
+        "Organize": ft.Text("Organize Content", size=24, color=ft.colors.WHITE),
         "Utilities": ft.Text("Utilities Content", size=24, color=ft.colors.WHITE),
-        "Hardware": ft.Text("Hardware Content", size=24, color=ft.colors.WHITE),
+        "Hardware": mostrar_info_hardware(),
         "Restart": ft.Text("Restart Content", size=24, color=ft.colors.WHITE),
         "Options": ft.Text("Options Content", size=24, color=ft.colors.WHITE)
     }
 
     iconos_menu = [
-        create_menu_item(ft.icons.WINDOW_ROUNDED, "Windows", tabs_content["Windows"]),
-        create_menu_item(ft.icons.APPS, "Apps", tabs_content["Apps"]),
-        create_menu_item(ft.icons.SETTINGS, "Utilities", tabs_content["Utilities"]),
-        create_menu_item(ft.icons.HARDWARE_ROUNDED, "Hardware", tabs_content["Hardware"]),
-        create_menu_item(ft.icons.RESTART_ALT_ROUNDED, "Restart", tabs_content["Restart"]),
-        create_menu_item(ft.icons.SETTINGS_ROUNDED, "Options", tabs_content["Options"])
+        create_menu_item(ft.icons.WINDOW_ROUNDED, "Windows", tabs_content["Windows"], "#B5BFE3"),
+        create_menu_item(ft.icons.APPS, "Apps", tabs_content["Apps"], "#B5BFE3"),
+        create_menu_item(ft.icons.FOLDER_ROUNDED, "Organize", tabs_content["Organize"], "#B5BFE3"),
+        create_menu_item(ft.icons.SETTINGS, "Utilities", tabs_content["Utilities"], "#B5BFE3"),
+        create_menu_item(ft.icons.HARDWARE_ROUNDED, "Hardware", tabs_content["Hardware"], "#B5BFE3"),
+        create_menu_item(ft.icons.RESTART_ALT_ROUNDED, "Restart", tabs_content["Restart"], "#B5BFE3"),
+        create_menu_item(ft.icons.SETTINGS_ROUNDED, "Options", tabs_content["Options"], "#B5BFE3")
     ]
 
     child_container = ft.Container(
@@ -123,7 +114,7 @@ def main(page: ft.Page):
             spacing=10,
         ),
         alignment=ft.alignment.center,
-        width=page.width * 0.285,
+        width=page.width * 0.335,
         height=50,
         border_radius=10,
         bgcolor="#3C3D5C",
@@ -133,7 +124,7 @@ def main(page: ft.Page):
 
     menu = ft.Container(
         alignment=ft.alignment.center,
-        width=page.width * 0.285,
+        width=page.width * 0.335,
         height=50,
         border_radius=10,
         bgcolor="#1B1C30",

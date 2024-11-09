@@ -74,7 +74,7 @@ def apps_tab():
     )
 
     progress_bar = ft.ProgressBar(width=400)
-    progress_bar.value= 1
+    progress_bar.value= 0
     current_task_text = ft.Text("")
 
     download_button = ft.ElevatedButton(
