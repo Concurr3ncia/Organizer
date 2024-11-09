@@ -30,7 +30,7 @@ def apps_tab():
                         alignment=ft.alignment.center,
                         spacing=5,
                         scroll=ft.ScrollMode.ALWAYS,
-                        height=container_height - 10,
+                        height=container_height - 50,
                     ),
                 ],
                 alignment=ft.alignment.center,
@@ -74,6 +74,7 @@ def apps_tab():
     )
 
     progress_bar = ft.ProgressBar(width=400)
+    progress_bar.value= 1
     current_task_text = ft.Text("")
 
     download_button = ft.ElevatedButton(
@@ -100,23 +101,26 @@ def apps_tab():
     )
 
 def uninstall_app(app_name):
-    # Primero verificamos si el paquete lightshot.install está instalado
+    # Convertimos el nombre de la app a minúsculas para comparaciones consistentes
+    app_name_lower = app_name.lower()
+    
+    # Primero verificamos si el paquete .install está instalado
     check_installed = subprocess.run(["choco", "list"], capture_output=True, text=True)
     
     # Si el paquete .install está instalado, primero lo desinstalamos
-    if f"{app_name}.install" in check_installed.stdout:
+    if f"{app_name_lower}.install" in check_installed.stdout.lower():
         print(f"Desinstalando {app_name}.install...")
         try:
-            subprocess.run(["choco", "uninstall", f"{app_name}.install", "-y", "--force"], check=True)
+            subprocess.run(["choco", "uninstall", f"{app_name_lower}.install", "-y", "--force"], check=True)
             print(f"Paquete {app_name}.install desinstalado correctamente.")
         except subprocess.CalledProcessError as e:
             print(f"Error al desinstalar {app_name}.install: {e}")
     
     # Luego intentamos desinstalar el paquete principal (sin .install)
-    if f"{app_name}" in check_installed.stdout:
+    if f"{app_name_lower}" in check_installed.stdout.lower():
         print(f"Desinstalando {app_name}...")
         try:
-            subprocess.run(["choco", "uninstall", app_name, "-y", "--force-dependencies"], check=True)
+            subprocess.run(["choco", "uninstall", app_name_lower, "-y", "--force-dependencies"], check=True)
             print(f"Paquete {app_name} desinstalado correctamente.")
         except subprocess.CalledProcessError as e:
             print(f"Error al desinstalar {app_name}: {e}")
