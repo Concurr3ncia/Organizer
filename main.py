@@ -2,6 +2,7 @@ import flet as ft
 import time
 from apps_tab import *
 from hardware_tab import *
+from windows import *
 
 def main(page: ft.Page):
     page.window.maximized = True
@@ -48,14 +49,14 @@ def main(page: ft.Page):
                 e.control.content.controls.append(text)
                 label_width = len(label) * 8
                 e.control.width = 50 + label_width
-                menu.width = page.width * 0.31 + label_width
-                child_container.width = page.width * 0.31 + label_width
+                menu.width = page.width * 0.355 + label_width
+                child_container.width = page.width * 0.355 + label_width
                 e.control.bgcolor = "#888abf"
                 is_hovered = True
             elif e.data == "false" and is_hovered:
                 e.control.content.controls.pop()
-                menu.width = page.width * 0.31
-                child_container.width = page.width * 0.31
+                menu.width = page.width * 0.355
+                child_container.width = page.width * 0.355
                 e.control.width = 50
                 e.control.bgcolor = "#5D5F92"
                 is_hovered = False
@@ -74,7 +75,7 @@ def main(page: ft.Page):
 
         return ft.Container(
             content=ft.Row(
-                controls=[ft.Icon(name=icon_name, color=colorselect, size=30)],
+                controls=[ft.Icon(name=icon_name, color=colorselect, size=25)],
                 alignment=ft.MainAxisAlignment.CENTER,
             ),
             width=50,
@@ -88,12 +89,13 @@ def main(page: ft.Page):
         )
 
     tabs_content = {
-        "Windows": ft.Text("Windows Content", size=24, color=ft.colors.WHITE),
+        "Windows": display_optimization_options(page),
         "Apps": apps_tab(),
         "Organize": ft.Text("Organize Content", size=24, color=ft.colors.WHITE),
         "Utilities": ft.Text("Utilities Content", size=24, color=ft.colors.WHITE),
         "Hardware": display_hardware_info(page),
-        "Restart": ft.Text("Restart Content", size=24, color=ft.colors.WHITE),
+        "Startup": ft.Text("Startup Content", size=24, color=ft.colors.WHITE),
+        "Cleaner": ft.Text("Cleaner Content", size=24, color=ft.colors.WHITE),
         "Options": ft.Text("Options Content", size=24, color=ft.colors.WHITE)
     }
 
@@ -101,9 +103,10 @@ def main(page: ft.Page):
         create_menu_item(ft.icons.WINDOW_ROUNDED, "Windows", tabs_content["Windows"], "#B5BFE3"),
         create_menu_item(ft.icons.APPS, "Apps", tabs_content["Apps"], "#B5BFE3"),
         create_menu_item(ft.icons.FOLDER_ROUNDED, "Organize", tabs_content["Organize"], "#B5BFE3"),
-        create_menu_item(ft.icons.SETTINGS, "Utilities", tabs_content["Utilities"], "#B5BFE3"),
+        create_menu_item(ft.icons.RESTART_ALT_ROUNDED, "Startup", tabs_content["Startup"], "#B5BFE3"),
+        create_menu_item(ft.icons.CLEANING_SERVICES, "Cleaner", tabs_content["Cleaner"], "#B5BFE3"),
+        create_menu_item(ft.icons.TASK, "Utilities", tabs_content["Utilities"], "#B5BFE3"),
         create_menu_item(ft.icons.HARDWARE_ROUNDED, "Hardware", tabs_content["Hardware"], "#B5BFE3"),
-        create_menu_item(ft.icons.RESTART_ALT_ROUNDED, "Restart", tabs_content["Restart"], "#B5BFE3"),
         create_menu_item(ft.icons.SETTINGS_ROUNDED, "Options", tabs_content["Options"], "#B5BFE3")
     ]
 
@@ -114,7 +117,7 @@ def main(page: ft.Page):
             spacing=10,
         ),
         alignment=ft.alignment.center,
-        width=page.width * 0.335,
+        width=page.width * 0.38,
         height=50,
         border_radius=10,
         bgcolor="#3C3D5C",
@@ -124,7 +127,7 @@ def main(page: ft.Page):
 
     menu = ft.Container(
         alignment=ft.alignment.center,
-        width=page.width * 0.335,
+        width=page.width * 0.38,
         height=50,
         border_radius=10,
         bgcolor="#1B1C30",
