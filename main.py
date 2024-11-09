@@ -108,7 +108,7 @@ def main(page: ft.Page):
     }
 
     iconos_menu = [
-        create_menu_item(ft.icons.WINDOW_ROUNDED, "Home", tabs_content["Windows"]),
+        create_menu_item(ft.icons.WINDOW_ROUNDED, "Windows", tabs_content["Windows"]),
         create_menu_item(ft.icons.APPS, "Apps", tabs_content["Apps"]),
         create_menu_item(ft.icons.SETTINGS, "Utilities", tabs_content["Utilities"]),
         create_menu_item(ft.icons.HARDWARE_ROUNDED, "Hardware", tabs_content["Hardware"]),
