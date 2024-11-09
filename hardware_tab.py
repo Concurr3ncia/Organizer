@@ -207,7 +207,7 @@ def display_hardware_info(page):
         category_container = ft.Container(
             content=ft.Column(
                 controls=[
-                    ft.Text(category, size=20, weight=ft.FontWeight.BOLD),
+                    ft.Text(f"---- {category} -----", size=20, weight=ft.FontWeight.BOLD),
                 ],
                 alignment=ft.MainAxisAlignment.START,
                 spacing=10,
