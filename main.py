@@ -92,7 +92,7 @@ def main(page: ft.Page):
         "Apps": apps_tab(),
         "Organize": ft.Text("Organize Content", size=24, color=ft.colors.WHITE),
         "Utilities": ft.Text("Utilities Content", size=24, color=ft.colors.WHITE),
-        "Hardware": mostrar_info_hardware(),
+        "Hardware": display_hardware_info(page),
         "Restart": ft.Text("Restart Content", size=24, color=ft.colors.WHITE),
         "Options": ft.Text("Options Content", size=24, color=ft.colors.WHITE)
     }

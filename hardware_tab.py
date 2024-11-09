@@ -1,89 +1,98 @@
 import flet as ft
 import subprocess
 
-def obtener_info_cpu():
-    comando = 'Get-CimInstance -ClassName Win32_Processor'
+def get_cpu_info():
+    command = 'Get-CimInstance -ClassName Win32_Processor'
     try:
-        cpu_raw = subprocess.check_output(["powershell", "-Command", comando], stderr=subprocess.PIPE)
+        cpu_raw = subprocess.check_output(["powershell", "-Command", command], stderr=subprocess.PIPE)
         cpu_info = {}
-        for line in cpu_raw.decode('latin1').strip().splitlines():  # Cambiar a 'latin1'
+        for line in cpu_raw.decode('latin1').strip().splitlines():
             if ":" in line:
                 key, value = line.split(":", 1)
                 cpu_info[key.strip()] = value.strip()
         return cpu_info
     except subprocess.CalledProcessError as e:
-        return f"Error al obtener información de la CPU: {e}"
+        return f"Error getting CPU info: {e}"
 
-def obtener_info_mainboard():
-    comando = 'Get-CimInstance -ClassName Win32_BaseBoard'
+def get_mainboard_info():
+    command = 'Get-CimInstance -ClassName Win32_BaseBoard'
     try:
-        mainboard_raw = subprocess.check_output(["powershell", "-Command", comando], stderr=subprocess.PIPE)
+        mainboard_raw = subprocess.check_output(["powershell", "-Command", command], stderr=subprocess.PIPE)
         mainboard_info = {}
-        for line in mainboard_raw.decode('latin1').strip().splitlines():  # Cambiar a 'latin1'
+        for line in mainboard_raw.decode('latin1').strip().splitlines():
             if ":" in line:
                 key, value = line.split(":", 1)
                 mainboard_info[key.strip()] = value.strip()
         return mainboard_info
     except subprocess.CalledProcessError as e:
-        return f"Error al obtener información de la placa base: {e}"
+        return f"Error getting mainboard info: {e}"
 
-def obtener_info_gpu():
-    comando = 'Get-CimInstance -ClassName Win32_VideoController'
+def get_gpu_info():
+    command = 'Get-CimInstance -ClassName Win32_VideoController'
     try:
-        gpu_raw = subprocess.check_output(["powershell", "-Command", comando], stderr=subprocess.PIPE)
+        gpu_raw = subprocess.check_output(["powershell", "-Command", command], stderr=subprocess.PIPE)
         gpu_info = {}
-        for line in gpu_raw.decode('latin1').strip().splitlines():  # Cambiar a 'latin1'
+        for line in gpu_raw.decode('latin1').strip().splitlines():
             if ":" in line:
                 key, value = line.split(":", 1)
                 gpu_info[key.strip()] = value.strip()
+        # Convert VRAM from bytes to GB
+        if "AdapterRAM" in gpu_info:
+            gpu_info["AdapterRAM"] = str(int(gpu_info["AdapterRAM"]) // (1024 ** 3)) + " GB"
         return gpu_info
     except subprocess.CalledProcessError as e:
-        return f"Error al obtener información de la GPU: {e}"
+        return f"Error getting GPU info: {e}"
 
-def obtener_info_ram():
-    comando = 'Get-CimInstance -ClassName Win32_PhysicalMemory'
+def get_ram_info():
+    command = 'Get-CimInstance -ClassName Win32_PhysicalMemory'
     try:
-        ram_raw = subprocess.check_output(["powershell", "-Command", comando], stderr=subprocess.PIPE)
+        ram_raw = subprocess.check_output(["powershell", "-Command", command], stderr=subprocess.PIPE)
         ram_info = {}
-        for line in ram_raw.decode('latin1').strip().splitlines():  # Cambiar a 'latin1'
+        for line in ram_raw.decode('latin1').strip().splitlines():
             if ":" in line:
                 key, value = line.split(":", 1)
                 ram_info[key.strip()] = value.strip()
+        # Convert RAM capacity from bytes to GB
+        if "Capacity" in ram_info:
+            ram_info["Capacity"] = str(int(ram_info["Capacity"]) // (1024 ** 3)) + " GB"
         return ram_info
     except subprocess.CalledProcessError as e:
-        return f"Error al obtener información de la RAM: {e}"
+        return f"Error getting RAM info: {e}"
 
-def obtener_info_disco():
-    comando = 'Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object DeviceID, Size, MediaType'
+def get_disk_info():
+    command = 'Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object DeviceID, Size, MediaType'
     try:
-        disco_raw = subprocess.check_output(["powershell", "-Command", comando], stderr=subprocess.PIPE)
-        disco_info = []
-        for line in disco_raw.decode('latin1').strip().splitlines():  # Cambiar a 'latin1'
+        disk_raw = subprocess.check_output(["powershell", "-Command", command], stderr=subprocess.PIPE)
+        disk_info = []
+        for line in disk_raw.decode('latin1').strip().splitlines():
             if ":" in line:
                 parts = line.split(":")
                 if len(parts) > 1:
                     key, value = parts[0].strip(), parts[1].strip()
                     if key in ["DeviceID", "Size", "MediaType"]:
-                        disco_info.append((key, value))
-        return disco_info
+                        # Convert disk size from bytes to GB
+                        if key == "Size":
+                            value = str(int(value) // (1024 ** 3)) + " GB"
+                        disk_info.append((key, value))
+        return disk_info
     except subprocess.CalledProcessError as e:
-        return f"Error al obtener información de los discos duros: {e}"
+        return f"Error getting disk info: {e}"
 
-def mostrar_info_hardware():
-    cpu = obtener_info_cpu()
-    mainboard = obtener_info_mainboard()
-    gpu = obtener_info_gpu()
-    ram = obtener_info_ram()
-    discos = obtener_info_disco()
+def display_hardware_info(page):
+    cpu = get_cpu_info()
+    mainboard = get_mainboard_info()
+    gpu = get_gpu_info()
+    ram = get_ram_info()
+    disks = get_disk_info()
 
     cpu_container = ft.Container(
         content=ft.Column(
             controls=[
                 ft.Text("CPU", size=24, weight=ft.FontWeight.BOLD),
-                ft.Text(f"Nombre: {cpu.get('Name', 'Desconocido')}"),
-                ft.Text(f"Familia: {cpu.get('Family', 'Desconocido')}"),
-                ft.Text(f"MaxClockSpeed: {cpu.get('MaxClockSpeed', 'Desconocido')} MHz"),
-                ft.Text(f"Arquitectura: {cpu.get('Architecture', 'Desconocida')}")
+                ft.Text(f"Name: {cpu.get('Name', 'Unknown')}"),
+                ft.Text(f"Family: {cpu.get('Family', 'Unknown')}"),
+                ft.Text(f"MaxClockSpeed: {cpu.get('MaxClockSpeed', 'Unknown')} MHz"),
+                ft.Text(f"Architecture: {cpu.get('Architecture', 'Unknown')}")
             ],
             alignment=ft.MainAxisAlignment.START,
             spacing=10,
@@ -91,14 +100,15 @@ def mostrar_info_hardware():
         padding=ft.padding.all(10),
         bgcolor="#3C3D5C",
         border_radius=10,
+        height=page.height // 5  # Dynamic height based on the page height
     )
 
     mainboard_container = ft.Container(
         content=ft.Column(
             controls=[
                 ft.Text("Mainboard", size=24, weight=ft.FontWeight.BOLD),
-                ft.Text(f"Fabricante: {mainboard.get('Manufacturer', 'Desconocido')}"),
-                ft.Text(f"Producto: {mainboard.get('Product', 'Desconocido')}")
+                ft.Text(f"Manufacturer: {mainboard.get('Manufacturer', 'Unknown')}"),
+                ft.Text(f"Product: {mainboard.get('Product', 'Unknown')}")
             ],
             alignment=ft.MainAxisAlignment.START,
             spacing=10,
@@ -106,14 +116,15 @@ def mostrar_info_hardware():
         padding=ft.padding.all(10),
         bgcolor="#3C3D5C",
         border_radius=10,
+        height=page.height // 5  # Dynamic height based on the page height
     )
 
     gpu_container = ft.Container(
         content=ft.Column(
             controls=[
                 ft.Text("GPU", size=24, weight=ft.FontWeight.BOLD),
-                ft.Text(f"Nombre: {gpu.get('Name', 'Desconocido')}"),
-                ft.Text(f"VRAM: {gpu.get('VRAM', 'Desconocido')} GB")
+                ft.Text(f"Name: {gpu.get('Name', 'Unknown')}"),
+                ft.Text(f"VRAM: {gpu.get('AdapterRAM', 'Unknown')}")
             ],
             alignment=ft.MainAxisAlignment.START,
             spacing=10,
@@ -121,14 +132,15 @@ def mostrar_info_hardware():
         padding=ft.padding.all(10),
         bgcolor="#3C3D5C",
         border_radius=10,
+        height=page.height // 5  # Dynamic height based on the page height
     )
 
     ram_container = ft.Container(
         content=ft.Column(
             controls=[
                 ft.Text("RAM", size=24, weight=ft.FontWeight.BOLD),
-                ft.Text(f"Capacidad: {ram.get('Capacity', 'Desconocida')}"),
-                ft.Text(f"Velocidad: {ram.get('Speed', 'Desconocida')}")
+                ft.Text(f"Capacity: {ram.get('Capacity', 'Unknown')}"),
+                ft.Text(f"Speed: {ram.get('Speed', 'Unknown')}")
             ],
             alignment=ft.MainAxisAlignment.START,
             spacing=10,
@@ -136,13 +148,14 @@ def mostrar_info_hardware():
         padding=ft.padding.all(10),
         bgcolor="#3C3D5C",
         border_radius=10,
+        height=page.height // 5  # Dynamic height based on the page height
     )
 
-    discos_container = ft.Container(
+    disks_container = ft.Container(
         content=ft.Column(
             controls=[
-                ft.Text("Discos Duros", size=24, weight=ft.FontWeight.BOLD),
-                ft.Text(" | ".join([f"{disk[0]}: {disk[1]}" for disk in discos]))
+                ft.Text("Disks", size=24, weight=ft.FontWeight.BOLD),
+                ft.Text(" | ".join([f"{disk[0]}: {disk[1]}" for disk in disks]))
             ],
             alignment=ft.MainAxisAlignment.START,
             spacing=10,
@@ -150,16 +163,21 @@ def mostrar_info_hardware():
         padding=ft.padding.all(10),
         bgcolor="#3C3D5C",
         border_radius=10,
+        height=page.height // 5  # Dynamic height based on the page height
     )
 
-    return ft.Column(
+    # Organize in a ListView to allow scrolling
+    list_view = ft.ListView(
         controls=[
             cpu_container,
             mainboard_container,
             gpu_container,
             ram_container,
-            discos_container
+            disks_container,
         ],
-        spacing=20,
-        alignment=ft.MainAxisAlignment.START
+        height=page.height - 100,  # Take the remaining height after header and footer
+        width=page.width,  # Full page width
+        padding=ft.padding.all(20),  # Add padding between components
     )
+
+    return list_view
