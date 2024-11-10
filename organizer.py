@@ -388,7 +388,6 @@ def create_section_container(title: str, content: ft.Control) -> ft.Container:
         border_radius=10,
         bgcolor="#3C3D5C",
         width=400,
-        border=ft.border.all(1, "#4F46E5")
     )
 
 def organize_tab(page: ft.Page):
@@ -406,7 +405,7 @@ def organize_tab(page: ft.Page):
         content=ft.GridView(
             controls=containers,
             max_extent=400,
-            child_aspect_ratio=0.75,
+            child_aspect_ratio=0.6,
             spacing=20,
             padding=20,
         ),
@@ -428,10 +427,6 @@ def main(page: ft.Page):
     page.scroll = ft.ScrollMode.ADAPTIVE
     page.padding = 0
     page.spacing = 0
-    page.window_width = 1200
-    page.window_min_width = 800
-    page.window_height = 800
-    page.window_min_height = 600
     page.add(organize_tab(page))
 
 if __name__ == "__main__":
