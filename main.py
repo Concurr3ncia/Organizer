@@ -155,14 +155,14 @@ def main(page: ft.Page):
                 e.control.content.controls.append(text)
                 label_width = len(label) * 8
                 e.control.width = 50 + label_width
-                menu.width = page.width * 0.355 + label_width
-                child_container.width = page.width * 0.355 + label_width
+                menu.width = page.width * 0.352 + label_width
+                child_container.width = page.width * 0.352 + label_width
                 e.control.bgcolor = "#888abf"
                 is_hovered = True
             elif e.data == "false" and is_hovered:
                 e.control.content.controls.pop()
-                menu.width = page.width * 0.355
-                child_container.width = page.width * 0.355
+                menu.width = page.width * 0.352
+                child_container.width = page.width * 0.352
                 e.control.width = 50
                 e.control.bgcolor = "#5D5F92"
                 is_hovered = False
@@ -228,7 +228,7 @@ def main(page: ft.Page):
                 spacing=10,
             ),
             alignment=ft.alignment.center,
-            width=page.width * 0.38,
+            width=page.width * 0.35,
             height=50,
             border_radius=10,
             bgcolor="#3C3D5C",
@@ -238,7 +238,7 @@ def main(page: ft.Page):
 
         menu = ft.Container(
             alignment=ft.alignment.center,
-            width=page.width * 0.38,
+            width=page.width * 0.35,
             height=50,
             border_radius=10,
             bgcolor="#1B1C30",
