@@ -7,6 +7,7 @@ from typing import Dict, Any
 from apps_tab import *
 from hardware_tab import *
 from windows import *
+from organizer import organize_tab  # Importamos la función organize_tab
 
 def main(page: ft.Page):
     page.window.maximized = True
