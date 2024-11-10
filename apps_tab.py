@@ -45,17 +45,7 @@ def apps_tab():
             animate=ft.animation.Animation(duration=300, curve="easeInOut")
         )
 
-        shadow_categories = ft.Container(
-            width=container_width,
-            height=container_height + 10,
-            border_radius=10,
-            bgcolor="#3C3D5C",
-            content=category_container,
-            animate=ft.animation.Animation(duration=300, curve="easeInOut"),
-            border=ft.border.only(bottom=ft.border.BorderSide(3.5, "#1B1C30")),
-        )
-
-        row.append(shadow_categories)
+        row.append(category_container)
 
         if len(row) == 10:
             rows.append(ft.Row(controls=row, alignment=ft.MainAxisAlignment.CENTER, spacing=10))
