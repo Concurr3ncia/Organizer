@@ -55,7 +55,7 @@ def main(page: ft.Page):
         progress_bar.width = page.width * 0.3 if page.width > 1000 else page.width * 0.8
         page.update()
 
-    page.on_resize = page_resize
+    page.on_resized = page_resize
     page.add(loading_container)
     
     # Initialize empty containers for modules
