@@ -13,7 +13,7 @@ def display_optimization_options(page: ft.Page):
                 ft.Switch(
                     value=False,
                     on_change=on_change,
-                    active_color=ft.colors.GREEN,
+                    active_color="#b1b2e6",
                     scale=0.75
                 ),
                 ft.Text(label, size=12, color=ft.colors.WHITE)

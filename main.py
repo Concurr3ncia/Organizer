@@ -10,7 +10,6 @@ from windows import *
 from organizer import organize_tab  # Importamos la función organize_tab
 
 def main(page: ft.Page):
-    page.window.maximized = True
     page.bgcolor = "#25253d"
     page.title = "Organizer"
     
@@ -56,6 +55,7 @@ def main(page: ft.Page):
         page.update()
 
     page.on_resized = page_resize
+    page.window.maximized = True
     page.add(loading_container)
     
     # Initialize empty containers for modules
@@ -77,7 +77,7 @@ def main(page: ft.Page):
             loading_text.value = "Loading Apps Module..."
             page.update()
             await asyncio.sleep(0.5)  # Simulate actual loading time
-            tabs_content["Apps"] = apps_tab()
+            tabs_content["Apps"] = apps_tab(page)
             progress_bar.value = 0.4
             page.update()
             
@@ -196,15 +196,27 @@ def main(page: ft.Page):
 
     def initialize_main_ui():
         nonlocal tabs_content
-        
+
+        organizer_version_contain = ft.Column(
+            controls=[
+                ft.Text("Organizer", size=20, weight=ft.FontWeight.BOLD),
+                ft.Text("Version: 0.0", size=16),
+            ],
+            spacing=0  # Quitar espacio entre los textos
+        )
+
         header = ft.Container(
             content=ft.Row(
                 controls=[
-                    ft.Icon(name=ft.icons.FOLDER),
-                    ft.Text("Organizer", size=20, weight=ft.FontWeight.BOLD)
-                ]
+                    ft.Icon(name=ft.icons.FOLDER, scale=2),
+                    ft.Container(
+                        content=organizer_version_contain,
+                    ),
+                ],
+                alignment=ft.MainAxisAlignment.START,
+                spacing=20  # Controla el espacio entre el icono y los textos
             ),
-            padding=ft.padding.only(left=10, top=10),
+            padding=ft.padding.only(left=20, top=10),
             alignment=ft.alignment.top_left
         )
 

@@ -387,16 +387,15 @@ def create_section_container(title: str, content: ft.Control) -> ft.Container:
         padding=20,
         border_radius=10,
         bgcolor="#3C3D5C",
-        width=400,
     )
 
 def organize_tab(page: ft.Page):
     sections = [
-        ("Clasificación de archivos", create_file_classification_section(page)),
-        ("Renombrado masivo de archivos", create_mass_rename_section(page)),
-        ("Archivos temporales", create_temp_files_section(page)),
-        ("Copias de seguridad", create_backup_section(page)),
-        ("Búsqueda avanzada", create_advanced_search_section(page))
+        ("File Classification", create_file_classification_section(page)),
+        ("Mass File Renaming", create_mass_rename_section(page)),
+        ("Temporary Files", create_temp_files_section(page)),
+        ("Backups", create_backup_section(page)),
+        ("Advanced Search", create_advanced_search_section(page))
     ]
 
     containers = [create_section_container(title, content) for title, content in sections]
@@ -405,7 +404,7 @@ def organize_tab(page: ft.Page):
         content=ft.GridView(
             controls=containers,
             max_extent=400,
-            child_aspect_ratio=0.6,
+            child_aspect_ratio=0.65,
             spacing=20,
             padding=20,
         ),
