@@ -2,18 +2,20 @@ import flet as ft
 import time
 import asyncio
 from typing import Dict, Any
+from flet_translator import TranslateFletPage, GoogleTranslateLanguage
 
-# Import modules
 from apps_tab import *
 from hardware_tab import *
 from windows import *
-from organizer import organize_tab  # Importamos la función organize_tab
+from options import *
+from organizer import organize_tab
 
 def main(page: ft.Page):
     page.bgcolor = "#25253d"
     page.title = "Organizer"
-    
-    # Loading screen components
+
+    trans = TranslateFletPage(page=page, into_language=GoogleTranslateLanguage.spanish, use_internet=True)
+
     progress_bar = ft.ProgressBar(
         width=page.width * 0.3 if page.width > 1000 else page.width * 0.8,
         color="#888abf",
@@ -57,72 +59,70 @@ def main(page: ft.Page):
     page.on_resized = page_resize
     page.window.maximized = True
     page.add(loading_container)
-    
-    # Initialize empty containers for modules
+
     tabs_content: Dict[str, Any] = {}
-    
+
     async def load_modules():
         nonlocal tabs_content
         
-        # Define module loading steps
         async def load_windows_module():
             loading_text.value = "Loading Windows Module..."
-            page.update()
-            await asyncio.sleep(0.5)  # Simulate actual loading time
+            trans.update()
+            await asyncio.sleep(0.5)
             tabs_content["Windows"] = display_optimization_options(page)
             progress_bar.value = 0.2
-            page.update()
             
         async def load_apps_module():
             loading_text.value = "Loading Apps Module..."
-            page.update()
-            await asyncio.sleep(0.5)  # Simulate actual loading time
+            trans.update()
+            await asyncio.sleep(0.5)
             tabs_content["Apps"] = apps_tab(page)
             progress_bar.value = 0.4
-            page.update()
             
         async def load_hardware_module():
             loading_text.value = "Loading Hardware Module..."
-            page.update()
-            await asyncio.sleep(0.5)  # Simulate actual loading time
+            trans.update()
+            await asyncio.sleep(0.5)
             tabs_content["Hardware"] = display_hardware_info(page)
             progress_bar.value = 0.6
-            page.update()
             
         async def load_organizer_module():
             loading_text.value = "Loading Organizer Module..."
-            page.update()
-            await asyncio.sleep(0.5)  # Simulate actual loading time
+            trans.update()
+            await asyncio.sleep(0.5)
             tabs_content["Organize"] = organize_tab(page)
             progress_bar.value = 0.8
-            page.update()
+
+        async def load_options_module():
+            loading_text.value = "Loading Options Module..."
+            trans.update()
+            await asyncio.sleep(0.5)
+            tabs_content["Options"] = options_tab(page)
+            progress_bar.value = 0.8
             
         async def load_remaining_modules():
             loading_text.value = "Loading Additional Modules..."
-            page.update()
-            await asyncio.sleep(0.5)  # Simulate actual loading time
-            # Initialize remaining modules
+            trans.update()
+            await asyncio.sleep(0.5)
             tabs_content.update({
                 "Utilities": ft.Text("Utilities Content", size=24, color=ft.colors.WHITE),
                 "Startup": ft.Text("Startup Content", size=24, color=ft.colors.WHITE),
-                "Cleaner": ft.Text("Cleaner Content", size=24, color=ft.colors.WHITE),
-                "Options": ft.Text("Options Content", size=24, color=ft.colors.WHITE)
+                "Cleaner": ft.Text("Cleaner Content", size=24, color=ft.colors.WHITE)
             })
             progress_bar.value = 1.0
-            page.update()
-        
-        # Execute module loading sequence
+            trans.update()
+            
         await load_windows_module()
         await load_apps_module()
         await load_hardware_module()
         await load_organizer_module()
+        await load_options_module()
         await load_remaining_modules()
         
         loading_text.value = "Finalizing..."
-        page.update()
+        trans.update()
         await asyncio.sleep(0.5)
         
-        # Remove loading screen and initialize main UI
         page.clean()
         initialize_main_ui()
     
@@ -174,7 +174,7 @@ def main(page: ft.Page):
             e.control.scale = ft.Scale(scale=0.9)
             e.control.update()
             switch_tab(tab_content)
-            page.update()
+            trans.update()
             time.sleep(0.1)
             e.control.scale = ft.Scale(scale=1.0)
             e.control.update()
@@ -202,19 +202,17 @@ def main(page: ft.Page):
                 ft.Text("Organizer", size=20, weight=ft.FontWeight.BOLD),
                 ft.Text("Version: 0.0", size=16),
             ],
-            spacing=0  # Quitar espacio entre los textos
+            spacing=0
         )
 
         header = ft.Container(
             content=ft.Row(
                 controls=[
                     ft.Icon(name=ft.icons.FOLDER, scale=2),
-                    ft.Container(
-                        content=organizer_version_contain,
-                    ),
+                    ft.Container(content=organizer_version_contain),
                 ],
                 alignment=ft.MainAxisAlignment.START,
-                spacing=20  # Controla el espacio entre el icono y los textos
+                spacing=20
             ),
             padding=ft.padding.only(left=20, top=10),
             alignment=ft.alignment.top_left
@@ -232,7 +230,7 @@ def main(page: ft.Page):
         ]
 
         nonlocal child_container, menu, tab_content_container
-        
+
         child_container = ft.Container(
             content=ft.Row(
                 controls=iconos_menu,
@@ -277,20 +275,20 @@ def main(page: ft.Page):
         )
 
         page.add(main_container)
-        page.update()
         switch_tab(tabs_content["Windows"])
+        trans.update()
 
-    def switch_tab(content):
-        tab_content_container.content = content
+    def switch_tab(tab_content):
+        tab_content_container.content = tab_content
         tab_content_container.update()
+        page.update()
 
-    # Initialize containers at module level
     child_container = None
     menu = None
     tab_content_container = None
-    
-    # Start the loading process
+
     asyncio.run(load_modules())
+    trans.update()
 
 if __name__ == "__main__":
     ft.app(target=main)

@@ -17,12 +17,12 @@ def safe_move(src, dst):
     except Exception as e:
         print(f"Error moving file {src} to {dst}: {str(e)}")
 
-def create_file_classification_section(page: ft.Page):
+def create_file_classification_section(page: ft.Page, ):
     selected_directory = ft.Text()
     
     def on_directory_result(e: ft.FilePickerResultEvent):
         selected_directory.value = e.path if e.path else "No directory selected"
-        selected_directory.update()
+        page.update()
 
     def classify_files(e):
         if not selected_directory.value or selected_directory.value == "No directory selected":
@@ -106,12 +106,12 @@ def create_file_classification_section(page: ft.Page):
     )
     return content
 
-def create_mass_rename_section(page: ft.Page):
+def create_mass_rename_section(page: ft.Page, ):
     selected_files = ft.Text()
     
     def on_files_result(e: ft.FilePickerResultEvent):
         selected_files.value = ", ".join([os.path.basename(f.path) for f in e.files]) if e.files else "No files selected"
-        selected_files.update()
+        page.update()
 
     def rename_files(e):
         if not selected_files.value or selected_files.value == "No files selected":
@@ -168,14 +168,15 @@ def create_mass_rename_section(page: ft.Page):
         ],
         spacing=10
     )
+    page.update()
     return content
 
-def create_temp_files_section(page: ft.Page):
+def create_temp_files_section(page: ft.Page, ):
     selected_directory = ft.Text()
     
     def on_directory_result(e: ft.FilePickerResultEvent):
         selected_directory.value = e.path if e.path else "No directory selected"
-        selected_directory.update()
+        page.update()
 
     def clean_temp_files(e):
         if not selected_directory.value or selected_directory.value == "No directory selected":
@@ -230,17 +231,17 @@ def create_temp_files_section(page: ft.Page):
     )
     return content
 
-def create_backup_section(page: ft.Page):
+def create_backup_section(page: ft.Page, ):
     source_directory = ft.Text()
     destination_directory = ft.Text()
     
     def on_source_result(e: ft.FilePickerResultEvent):
         source_directory.value = e.path if e.path else "No source directory selected"
-        source_directory.update()
+        page.update()
 
     def on_destination_result(e: ft.FilePickerResultEvent):
         destination_directory.value = e.path if e.path else "No destination directory selected"
-        destination_directory.update()
+        page.update()
 
     def backup_files(e):
         if not source_directory.value or source_directory.value == "No source directory selected":
@@ -302,13 +303,13 @@ def create_backup_section(page: ft.Page):
     )
     return content
 
-def create_advanced_search_section(page: ft.Page):
+def create_advanced_search_section(page: ft.Page, ):
     selected_directory = ft.Text()
     search_results = ft.ListView(expand=1, spacing=10, padding=20)
     
     def on_directory_result(e: ft.FilePickerResultEvent):
         selected_directory.value = e.path if e.path else "No directory selected"
-        selected_directory.update()
+        page.update()
 
     def search_files(e):
         if not selected_directory.value or selected_directory.value == "No directory selected":
@@ -334,7 +335,7 @@ def create_advanced_search_section(page: ft.Page):
                 elif search_term.lower() in file.lower():
                     search_results.controls.append(ft.Text(os.path.join(root, file)))
 
-        search_results.update()
+        page.update()
         page.show_snack_bar(ft.SnackBar(content=ft.Text(f"Found {len(search_results.controls)} results")))
 
     directory_picker = ft.FilePicker(on_result=on_directory_result)
@@ -370,7 +371,7 @@ def create_advanced_search_section(page: ft.Page):
     )
     return content
 
-def create_section_container(title: str, content: ft.Control) -> ft.Container:
+def create_section_container(title: str, content: ft.Control, ) -> ft.Container:
     return ft.Container(
         content=ft.Column(
             controls=[
@@ -390,6 +391,7 @@ def create_section_container(title: str, content: ft.Control) -> ft.Container:
     )
 
 def organize_tab(page: ft.Page):
+
     sections = [
         ("File Classification", create_file_classification_section(page)),
         ("Mass File Renaming", create_mass_rename_section(page)),
@@ -398,7 +400,7 @@ def organize_tab(page: ft.Page):
         ("Advanced Search", create_advanced_search_section(page))
     ]
 
-    containers = [create_section_container(title, content) for title, content in sections]
+    containers = [create_section_container(title, content, ) for title, content in sections]
 
     content = ft.Container(
         content=ft.GridView(

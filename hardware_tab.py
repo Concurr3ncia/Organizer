@@ -187,7 +187,7 @@ def get_general_info():
             "OS Version": windows_version,
             "User Name": computer_name,
         },
-        "Display": {
+        "Screen": {
             "Display Resolution": resolution,
             "Refresh Rate": refresh_rate,
         },

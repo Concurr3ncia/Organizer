@@ -190,7 +190,6 @@ def apps_tab(page: ft.Page):
     def update_progress_bar(progress, task):
         progress_bar.value = progress
         current_task_text.value = f"{task} {progress}%"
-        page.update()
 
     def run_winget_commands(commands):
         total_apps = len(commands)
@@ -217,7 +216,6 @@ def apps_tab(page: ft.Page):
 
             if process.returncode != 0:
                 current_task_text.value = f"Error: {app_name} failed"
-                page.update()
                 break
 
         update_progress_bar(100, "Completed")
