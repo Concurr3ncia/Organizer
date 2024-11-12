@@ -16,7 +16,14 @@ def display_optimization_options(page: ft.Page):
                     active_color="#b1b2e6",
                     scale=0.75
                 ),
-                ft.Text(label, size=12, color=ft.colors.WHITE)
+                ft.Text(label, size=12, color=ft.colors.WHITE),
+                ft.IconButton(
+                    icon=ft.icons.QUESTION_MARK_ROUNDED,
+                    tooltip="Open Website",
+                    on_click=print("test"),
+                    scale=0.8,
+                    bgcolor="#3C3D5C"
+                )
             ],
             alignment=ft.MainAxisAlignment.START,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
