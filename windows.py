@@ -37,13 +37,11 @@ def display_optimization_options(page: ft.Page):
                 spacing=5,  # Minimal space between title and switches
                 alignment=ft.MainAxisAlignment.START,
             ),
-            padding=ft.padding.all(10),  # Add small padding inside container
-            margin=ft.margin.all(10),  # Margin to create space between containers
+            padding=ft.padding.all(15),  # Add small padding inside container
+            margin=ft.margin.all(5),  # Margin to create space between containers
             border_radius=10,
             bgcolor="#3C3D5C",
             alignment=ft.alignment.top_center,
-            expand=True,  # Allow container to expand vertically based on content
-            width=page.width / 3 - 20,  # Adjust width based on page size
         )
 
     # Define the switches for each category
@@ -60,7 +58,7 @@ def display_optimization_options(page: ft.Page):
         create_switch("Restore Classic Photo Viewer", lambda e: system_optimization_function_2()),
         create_switch("Disable Modern Standby", lambda e: system_optimization_function_2()),
     ]
-    
+
     windows_update_switches = [
         create_switch("Disable Automatic Updates", lambda e: system_optimization_function_1()),
         create_switch("Disable Microsoft Store Updates", lambda e: system_optimization_function_2()),
@@ -109,31 +107,19 @@ def display_optimization_options(page: ft.Page):
         create_container("Extras", extras_switches),
     ]
 
-    # Create rows by grouping containers into 3 per row
-    rows = []
-    for i in range(0, len(containers), 4):
-        row_controls = containers[i:i+4]
-        
-        # Adjusting each row's container for even alignment
-        while len(row_controls) < 3:
-            row_controls.append(
-                ft.Container(content=ft.Column(), expand=True)
-            )
-        
-        rows.append(
-            ft.Row(
-                controls=row_controls,  # Agrupar los contenedores de a 3 por fila
-                alignment=ft.MainAxisAlignment.START,  # Alineamos los contenedores desde el inicio de la fila
-                spacing=10,  # Espacio entre contenedores
-                vertical_alignment=ft.CrossAxisAlignment.START,  # Alineación al tope
-            )
-        )
 
-    # Usamos ListView para hacerlo desplazable
-    main_container = ft.ListView(
-        controls=rows,
-        expand=True,
+    # Usamos Row con scroll para mantener todo en una línea horizontal
+    main_container = ft.Container(
+        content=ft.Row(
+            scroll=ft.ScrollMode.AUTO,
+            controls=containers,
+            spacing=5,
+            width=len(containers) * 300,  # Ancho total basado en contenedores
+            auto_scroll=True,
+            wrap=False  # Evita que los elementos se envuelvan a la siguiente línea
+        ),
         padding=ft.padding.all(10)
     )
+
 
     return main_container

@@ -14,7 +14,7 @@ def main(page: ft.Page):
     page.bgcolor = "#25253d"
     page.title = "Organizer"
 
-    trans = TranslateFletPage(page=page, into_language=GoogleTranslateLanguage.spanish, use_internet=True)
+    trans = TranslateFletPage(page=page, into_language=GoogleTranslateLanguage.english, use_internet=True)
 
     progress_bar = ft.ProgressBar(
         width=page.width * 0.3 if page.width > 1000 else page.width * 0.8,
@@ -280,8 +280,7 @@ def main(page: ft.Page):
 
     def switch_tab(tab_content):
         tab_content_container.content = tab_content
-        tab_content_container.update()
-        page.update()
+        trans.update()
 
     child_container = None
     menu = None
