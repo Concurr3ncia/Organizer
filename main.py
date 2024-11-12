@@ -206,17 +206,33 @@ def main(page: ft.Page):
         )
 
         header = ft.Container(
-            content=ft.Row(
+            content=ft.Column(
                 controls=[
-                    ft.Icon(name=ft.icons.FOLDER, scale=2),
-                    ft.Container(content=organizer_version_contain),
+                    ft.Container(
+                        content=ft.Row(
+                            controls=[
+                                ft.Icon(name=ft.icons.FOLDER, scale=2),
+                                ft.Container(content=organizer_version_contain),
+                            ],
+                            alignment=ft.MainAxisAlignment.START,
+                            spacing=20
+                        ),
+                        padding=ft.padding.only(left=20, top=10)
+                    ),
+                    ft.Container(
+                        content=ft.Text(""),
+                        width=page.width,
+                        height=3,
+                        bgcolor="#52547a",
+                        padding=ft.padding.only(top=10)  # Ajusta el padding superior si es necesario
+                    ),
                 ],
+                spacing=10,
                 alignment=ft.MainAxisAlignment.START,
-                spacing=20
-            ),
-            padding=ft.padding.only(left=20, top=10),
-            alignment=ft.alignment.top_left
+            )
         )
+
+
 
         iconos_menu = [
             create_menu_item(ft.icons.WINDOW_ROUNDED, "Windows", tabs_content["Windows"], "#B5BFE3"),

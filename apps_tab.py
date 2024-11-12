@@ -149,19 +149,19 @@ def apps_tab(page: ft.Page):
                                     )
                                 ],
                                 alignment=ft.MainAxisAlignment.START,
-                                spacing=5
+                                spacing=0
                             ) for app in apps
                         ],
                         alignment=ft.alignment.center,
-                        spacing=5,
+                        spacing=0,
                         scroll=ft.ScrollMode.ALWAYS,  # Habilitar el scroll dentro de esta columna
-                        height=container_height - 50,
+                        height=container_height - 70,
                     )
                 ],
                 alignment=ft.alignment.center,
             ),
-            width=container_width,
-            height=container_height,
+            width=container_width * 1.2,
+            height=container_height * 0.95,
             padding=ft.padding.only(left=10, top=10),
             border_radius=10,
             bgcolor="#3C3D5C",
