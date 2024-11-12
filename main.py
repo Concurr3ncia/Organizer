@@ -10,11 +10,24 @@ from windows import *
 from options import *
 from organizer import organize_tab
 
+
 def main(page: ft.Page):
     page.bgcolor = "#25253d"
     page.title = "Organizer"
 
-    trans = TranslateFletPage(page=page, into_language=GoogleTranslateLanguage.english, use_internet=True)
+    global language_selected
+    language_selected = None
+
+    def change_language(e):
+        global language_selected
+        language_selected =  e.control.value.lower()
+        trans.into_language = getattr(GoogleTranslateLanguage, language_selected)
+        page.clean()
+        page.add(loading_container)
+        #print(language_selected)
+
+    global trans
+    trans = TranslateFletPage(page=page, from_language=GoogleTranslateLanguage.english, into_language=getattr(GoogleTranslateLanguage, 'english'), use_internet=True, skiped_controls=[ft.Checkbox, ft.Switch])
 
     progress_bar = ft.ProgressBar(
         width=page.width * 0.3 if page.width > 1000 else page.width * 0.8,
@@ -52,18 +65,45 @@ def main(page: ft.Page):
         expand=True
     )
 
-    def page_resize(e):
-        progress_bar.width = page.width * 0.3 if page.width > 1000 else page.width * 0.8
-        page.update()
+        # Dropdown para cambiar el idioma
+    dropdown = ft.Dropdown(
+        options=[ft.dropdown.Option(idioma) for idioma in languages],
+        border_color="#565782",
+        on_change=change_language,
+        border_radius=10,
+        padding=ft.padding.all(5),
+        width=page.width * 0.25,  # Fijo el ancho para evitar que cambie
+    )
 
-    page.on_resized = page_resize
+    # Contenedor del cambio de idioma (en la parte derecha)
+    change_language_container = ft.Container(
+        content=ft.Column(
+            controls=[
+                ft.Text("Select language:", size=20),
+                dropdown,
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,  # Cambié a MainAxisAlignment.CENTER para asegurar que esté centrado verticalmente
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Asegura el centrado horizontal de los controles dentro de la columna
+            spacing=10,
+        ),
+        bgcolor="#3C3D5C",
+        padding=ft.padding.all(10),
+        margin=ft.margin.only(left=500, right=500, top=250, bottom=250),
+        alignment=ft.alignment.center,
+        border_radius=10,
+        expand=True
+    )
+
     page.window.maximized = True
-    page.add(loading_container)
+    page.add(change_language_container)
 
     tabs_content: Dict[str, Any] = {}
 
     async def load_modules():
         nonlocal tabs_content
+
+        while language_selected is None:
+            await asyncio.sleep(1)
         
         async def load_windows_module():
             loading_text.value = "Loading Windows Module..."
@@ -304,6 +344,7 @@ def main(page: ft.Page):
 
     asyncio.run(load_modules())
     trans.update()
+
 
 if __name__ == "__main__":
     ft.app(target=main)

@@ -74,9 +74,9 @@ def create_file_classification_section(page: ft.Page, ):
     directory_picker = ft.FilePicker(on_result=on_directory_result)
     page.overlay.append(directory_picker)
     
-    organize_by_type_checkbox = ft.Checkbox(label="Organize by file type", value=False)
-    organize_by_date_checkbox = ft.Checkbox(label="Organize by date", value=False)
-    create_subfolders_checkbox = ft.Checkbox(label="Create subfolders automatically", value=False)
+    organize_by_type_checkbox = ft.Checkbox(value=False)
+    organize_by_date_checkbox = ft.Checkbox(value=False)
+    create_subfolders_checkbox = ft.Checkbox(value=False)
     
     progress_bar = ft.ProgressBar(visible=False)
     progress_text = ft.Text("", visible=False)
@@ -91,9 +91,9 @@ def create_file_classification_section(page: ft.Page, ):
                 on_click=lambda _: directory_picker.get_directory_path()
             ),
             ft.Divider(),
-            organize_by_type_checkbox,
-            organize_by_date_checkbox,
-            create_subfolders_checkbox,
+            ft.Row(controls=[organize_by_type_checkbox, ft.Text("Organize by file type", size=12, color=ft.colors.WHITE),]),
+            ft.Row(controls=[organize_by_date_checkbox, ft.Text("Organize by date", size=12, color=ft.colors.WHITE),]),
+            ft.Row(controls=[create_subfolders_checkbox, ft.Text("Create subfolders automatically", size=12, color=ft.colors.WHITE),]),
             ft.ElevatedButton(
                 "Classify files",
                 icon=ft.icons.PLAY_ARROW,
@@ -143,8 +143,8 @@ def create_mass_rename_section(page: ft.Page, ):
 
     prefix_field = ft.TextField(label="Prefix", border_color="white")
     suffix_field = ft.TextField(label="Suffix", border_color="white")
-    include_date_checkbox = ft.Checkbox(label="Include date", value=False)
-    to_lower_checkbox = ft.Checkbox(label="Convert to lowercase", value=False)
+    include_date_checkbox = ft.Checkbox(value=False)
+    to_lower_checkbox = ft.Checkbox(value=False)
 
     content = ft.Column(
         controls=[
@@ -158,8 +158,8 @@ def create_mass_rename_section(page: ft.Page, ):
             ft.Divider(),
             prefix_field,
             suffix_field,
-            include_date_checkbox,
-            to_lower_checkbox,
+            ft.Row(controls=[include_date_checkbox, ft.Text("Include date", size=12, color=ft.colors.WHITE)]),
+            ft.Row(controls=[to_lower_checkbox, ft.Text("Convert to lowercase", size=12, color=ft.colors.WHITE)]),
             ft.ElevatedButton(
                 "Rename files",
                 icon=ft.icons.DRIVE_FILE_RENAME_OUTLINE,
@@ -204,9 +204,9 @@ def create_temp_files_section(page: ft.Page, ):
     directory_picker = ft.FilePicker(on_result=on_directory_result)
     page.overlay.append(directory_picker)
 
-    include_temp_checkbox = ft.Checkbox(label="Include temporary files", value=False)
-    include_cache_checkbox = ft.Checkbox(label="Include system cache", value=False)
-    preserve_recent_checkbox = ft.Checkbox(label="Preserve last 7 days", value=False)
+    include_temp_checkbox = ft.Checkbox(value=False)
+    include_cache_checkbox = ft.Checkbox(value=False)
+    preserve_recent_checkbox = ft.Checkbox(value=False)
 
     content = ft.Column(
         controls=[
@@ -218,9 +218,9 @@ def create_temp_files_section(page: ft.Page, ):
                 on_click=lambda _: directory_picker.get_directory_path()
             ),
             ft.Divider(),
-            include_temp_checkbox,
-            include_cache_checkbox,
-            preserve_recent_checkbox,
+            ft.Row(controls=[include_temp_checkbox, ft.Text("Include temporary files", size=12, color=ft.colors.WHITE)]),
+            ft.Row(controls=[include_cache_checkbox, ft.Text("Include system cache", size=12, color=ft.colors.WHITE)]),
+            ft.Row(controls=[preserve_recent_checkbox, ft.Text("Preserve last 7 days", size=12, color=ft.colors.WHITE)]),
             ft.ElevatedButton(
                 "Clean files",
                 icon=ft.icons.CLEANING_SERVICES,
@@ -271,8 +271,8 @@ def create_backup_section(page: ft.Page, ):
     destination_picker = ft.FilePicker(on_result=on_destination_result)
     page.overlay.extend([source_picker, destination_picker])
 
-    incremental_checkbox = ft.Checkbox(label="Incremental backup", value=False)
-    compress_checkbox = ft.Checkbox(label="Compress files", value=False)
+    incremental_checkbox = ft.Checkbox(value=False)
+    compress_checkbox = ft.Checkbox(value=False)
 
     content = ft.Column(
         controls=[
@@ -291,8 +291,8 @@ def create_backup_section(page: ft.Page, ):
                 on_click=lambda _: destination_picker.get_directory_path()
             ),
             ft.Divider(),
-            incremental_checkbox,
-            compress_checkbox,
+            ft.Row(controls=[incremental_checkbox, ft.Text("Incremental backup", size=12, color=ft.colors.WHITE)]),
+            ft.Row(controls=[compress_checkbox, ft.Text("Compress files", size=12, color=ft.colors.WHITE)]),
             ft.ElevatedButton(
                 "Start backup",
                 icon=ft.icons.BACKUP,
@@ -342,9 +342,9 @@ def create_advanced_search_section(page: ft.Page, ):
     page.overlay.append(directory_picker)
 
     search_field = ft.TextField(label="Search term", border_color="white", prefix_icon=ft.icons.SEARCH)
-    search_subfolders_checkbox = ft.Checkbox(label="Search in subfolders", value=False)
-    include_hidden_checkbox = ft.Checkbox(label="Include hidden files", value=False)
-    use_regex_checkbox = ft.Checkbox(label="Use regular expressions", value=False)
+    search_subfolders_checkbox = ft.Checkbox(value=False)
+    include_hidden_checkbox = ft.Checkbox(value=False)
+    use_regex_checkbox = ft.Checkbox(value=False)
 
     content = ft.Column(
         controls=[
@@ -357,9 +357,9 @@ def create_advanced_search_section(page: ft.Page, ):
             ),
             ft.Divider(),
             search_field,
-            search_subfolders_checkbox,
-            include_hidden_checkbox,
-            use_regex_checkbox,
+            ft.Row(controls=[search_subfolders_checkbox, ft.Text("Search in subfolders", size=12, color=ft.colors.WHITE)]),
+            ft.Row(controls=[include_hidden_checkbox, ft.Text("Include hidden files", size=12, color=ft.colors.WHITE)]),
+            ft.Row(controls=[use_regex_checkbox, ft.Text("Use regular expressions", size=12, color=ft.colors.WHITE)]),
             ft.ElevatedButton(
                 "Search",
                 icon=ft.icons.SEARCH,

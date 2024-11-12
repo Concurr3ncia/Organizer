@@ -5,8 +5,9 @@ languages = ["English", "Spanish", "Portuguese", "French"]
 
 def options_tab(page: ft.Page):
     # Botones Start with Windows y Update on Launch
-    start_with_windows_button = ft.Switch(label="Start with windows", active_color="#b1b2e6",)
-    update_on_launch_button = ft.Switch(label="Update on launch", active_color="#b1b2e6",)
+    start_with_windows_button = ft.Switch(active_color="#b1b2e6",)
+    update_on_launch_button = ft.Switch(active_color="#b1b2e6",)
+
 
     # Dropdown para cambiar el idioma
     dropdown = ft.Dropdown(
@@ -18,18 +19,6 @@ def options_tab(page: ft.Page):
         width=page.width * 0.25,  # Fijo el ancho para evitar que cambie
     )
 
-    # Color picker para el tema
-    color_picker_container = ft.Container(
-        content=ft.Column(
-            controls=[ft.Text("Select color theme:", size=20), ColorPicker(color="#c8df6f")]
-        ),
-        bgcolor="#3C3D5C",
-        width=page.width * 0.26,
-        padding=ft.padding.all(10),
-        height=page.height * 0.53,
-        border_radius=10,
-        margin=10
-    )
 
     # Contenedor del cambio de idioma (en la parte derecha)
     change_language_container = ft.Container(
@@ -49,6 +38,19 @@ def options_tab(page: ft.Page):
         border_radius=10
     )
 
+    # Color picker para el tema
+    color_picker_container = ft.Container(
+        content=ft.Column(
+            controls=[ft.Text("Select color theme:", size=20), ColorPicker(color="#c8df6f")]
+        ),
+        bgcolor="#3C3D5C",
+        width=page.width * 0.26,
+        padding=ft.padding.all(10),
+        height=page.height * 0.53,
+        border_radius=10,
+        margin=10
+    )
+
     # Contenedor principal que organiza todo en una fila
     main_container = ft.Container(
         content=ft.Row(
@@ -56,8 +58,8 @@ def options_tab(page: ft.Page):
                 # Columna izquierda con los botones Start with Windows y Update on Launch
                 ft.Column(
                     controls=[
-                        start_with_windows_button,
-                        update_on_launch_button,
+                        ft.Row(controls=[start_with_windows_button, ft.Text("Start with windows", size=12, color=ft.colors.WHITE)]),
+                        ft.Row(controls=[update_on_launch_button, ft.Text("Update on launch", size=12, color=ft.colors.WHITE)]),
                         color_picker_container
                     ],
                     alignment=ft.MainAxisAlignment.START,
