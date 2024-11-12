@@ -37,18 +37,19 @@ def display_optimization_options(page: ft.Page):
                     ft.Text(title, size=18, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
                     ft.Column(
                         controls=switches,
-                        spacing=0,  # Minimal space between switches
+                        spacing=0,
                         alignment=ft.MainAxisAlignment.START
                     )
                 ],
-                spacing=5,  # Minimal space between title and switches
+                spacing=5,
                 alignment=ft.MainAxisAlignment.START,
             ),
-            padding=ft.padding.all(15),  # Add small padding inside container
-            margin=ft.margin.all(5),  # Margin to create space between containers
+            padding=ft.padding.all(15),
+            margin=ft.margin.only(left=5, right=5, bottom=15),  # Espacio inferior añadido
             border_radius=10,
             bgcolor="#3C3D5C",
             alignment=ft.alignment.top_center,
+            border=ft.border.only(bottom=ft.border.BorderSide(3, "#313252")),
         )
 
     # Define the switches for each category
